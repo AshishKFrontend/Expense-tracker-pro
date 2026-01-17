@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker Pro - Updated</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div id="toast-container"></div>
+    
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div id="delete-modal" class="custom-modal hidden">
+            <h3><i class="fas fa-trash-alt"></i> Delete Transaction?</h3>
+            <p>Are you sure you want to remove this item?</p>
+            <div class="modal-actions">
+                <button class="btn-xs btn-cancel-modal" onclick="closeModal()">Cancel</button>
+                <button class="btn-xs btn-danger-modal" id="confirm-delete-btn">Delete</button>
+            </div>
+        </div>
+        
+        <div id="budget-modal" class="custom-modal hidden">
+            <h3><i class="fas fa-wallet"></i> Set Monthly Budget</h3>
+            <div class="input-with-icon" style="margin: 15px 0;">
+                <i class="fas fa-rupee-sign icon"></i>
+                <input type="number" id="budget-input" placeholder="Enter amount">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-xs btn-cancel-modal" onclick="closeModal()">Cancel</button>
+                <button class="btn-xs btn-success-modal" id="save-budget-btn">Save</button>
+            </div>
+        </div>
+
+        <div id="clear-modal" class="custom-modal hidden">
+            <h3><i class="fas fa-exclamation-triangle"></i> Clear All Data?</h3>
+            <p>This cannot be undone. All history will be lost.</p>
+            <div class="modal-actions">
+                <button class="btn-xs btn-cancel-modal" onclick="closeModal()">Cancel</button>
+                <button class="btn-xs btn-danger-modal" id="confirm-clear-btn">Yes, Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="import-file" style="display: none;" accept=".json">
+
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h2>My Wallet <span>Pro</span></h2>
+                <div class="header-actions">
+                    <button class="btn-sm" onclick="exportData()" title="Backup Data"><i class="fas fa-download"></i></button>
+                    <button class="btn-sm" onclick="document.getElementById('import-file').click()" title="Restore Data"><i class="fas fa-upload"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-row">
+            
+            <div class="col-left">
+                <div class="balance-card">
+                    <h3>Total Balance</h3>
+                    <h1 id="balance">₹0.00</h1>
+                    
+                    <div class="inc-exp-container">
+                        <div class="inc-box">
+                            <div class="icon-circle income-icon"><i class="fas fa-arrow-down"></i></div>
+                            <div>
+                                <h4>Income</h4>
+                                <p id="money-plus" class="money plus">₹0.00</p>
+                            </div>
+                        </div>
+                        <div class="exp-box">
+                            <div class="icon-circle expense-icon"><i class="fas fa-arrow-up"></i></div>
+                            <div>
+                                <h4>Expense</h4>
+                                <p id="money-minus" class="money minus">₹0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <h3 class="section-title" id="form-title">New Transaction</h3>
+                    
+                    <form id="form">
+                        <div class="transaction-type">
+                            <input type="radio" name="type" id="type-inc" value="income" checked>
+                            <label for="type-inc" class="radio-label inc">
+                                <i class="fas fa-plus"></i> Income
+                            </label>
+
+                            <input type="radio" name="type" id="type-exp" value="expense">
+                            <label for="type-exp" class="radio-label exp">
+                                <i class="fas fa-minus-circle"></i> Expense
+                            </label>
+                        </div>
+
+                        <div class="form-row" style="display: flex; gap: 10px;">
+                            <div class="form-control" style="flex: 1;">
+                                <label for="text">Title</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-pen-nib icon"></i>
+                                    <input type="text" id="text" placeholder="Details..." autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="form-control" style="width: 130px;">
+                                <label for="date">Date</label>
+                                <div class="input-with-icon">
+                                    <input type="date" id="date" style="padding-left: 15px; font-size: 0.9rem;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-control">
+                            <label for="category">Category</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-layer-group icon"></i>
+                                <select id="category">
+                                    <option value="fa-wallet">General</option>
+                                    <option value="fa-utensils">Food & Dining</option>
+                                    <option value="fa-shopping-bag">Shopping</option>
+                                    <option value="fa-house-user">Rent & Bills</option>
+                                    <option value="fa-car">Transport</option>
+                                    <option value="fa-gamepad">Entertainment</option>
+                                    <option value="fa-heartbeat">Health</option>
+                                    <option value="fa-graduation-cap">Education</option>
+                                    <option value="fa-money-bill-wave">Salary/Invest</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-control">
+                            <label for="amount">Amount</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-indian-rupee-sign icon"></i>
+                                <input type="number" id="amount" placeholder="0.00" />
+                            </div>
+                        </div>
+
+                        <button class="btn" id="submit-btn">Add Transaction <i class="fas fa-chevron-right"></i></button>
+                        <button type="button" class="btn btn-cancel" id="cancel-btn" style="display: none; margin-top: 10px; background: rgba(255,255,255,0.1);">Cancel Edit</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-right">
+                
+                <div class="chart-container">
+                    <div class="chart-box">
+                        <canvas id="expenseChart"></canvas>
+                        <div class="chart-center-text">
+                            <span id="chart-percent">0%</span>
+                            <small>Used</small>
+                        </div>
+                    </div>
+
+                    <div class="stats-box">
+                        <div class="stats-header">
+                            <h4><i class="fas fa-bolt"></i> Analytics</h4>
+                            <button class="btn-xs" onclick="openBudgetModal()" title="Set Monthly Budget">Set Budget</button>
+                        </div>
+                        
+                        <div class="stat-item">
+                            <div class="stat-icon info"><i class="fas fa-bullseye"></i></div>
+                            <div class="stat-info">
+                                <span>Monthly Budget</span>
+                                <strong id="budget-display">Not Set</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-item">
+                            <div class="stat-icon danger"><i class="fas fa-fire"></i></div>
+                            <div class="stat-info">
+                                <span>Max Expense</span>
+                                <strong id="biggest-expense" class="danger">₹0.00</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="history-wrapper">
+                    <div class="history-header">
+                        <h3 class="section-title">Recent Activity</h3>
+                        <button class="clear-btn" onclick="openClearModal()" title="Clear All"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+
+                    <div class="filters-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search" placeholder="Search transactions...">
+                        </div>
+                        <div class="filter-btns">
+                            <button class="f-btn active" onclick="filterData('all')">All</button>
+                            <button class="f-btn" onclick="filterData('income')">Inc</button>
+                            <button class="f-btn" onclick="filterData('expense')">Exp</button>
+                        </div>
+                    </div>
+
+                    <ul id="list" class="list">
+                        </ul>
+                </div>
+            </div>
+
+        </div> 
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
