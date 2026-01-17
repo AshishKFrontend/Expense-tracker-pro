@@ -5,9 +5,8 @@
 A modern, lightweight expense tracking application designed with a beautiful **Glassmorphism UI**. Built to help users track income, expenses, and manage monthly budgets effectively without any backend—data is stored securely in your browser's Local Storage.
 <img width="1916" height="940" alt="Screenshot 2026-01-18 014703" src="https://github.com/user-attachments/assets/3c30017a-e611-45b6-9381-956de5563e0c" />
 
-[ **🔴 LIVE DEMO LINK HERE** ](https://your-username.github.io/repo-name/)
+[ **🔴 LIVE DEMO LINK HERE** ](https://ashishkfrontend.github.io/Expense-tracker-pro/)
 
-![Project Screenshot](https://via.placeholder.com/1000x500?text=Upload+Your+Screenshot+Here)
 ## ✨ Features
 
 * **🎨 Glassmorphism Design:** A modern, frosted-glass aesthetic UI.
